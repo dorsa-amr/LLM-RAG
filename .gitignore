@@ -43,3 +43,6 @@ data/vector_db/
 
 # Logs
 *.log
+
+# Local personal notes
+.notes.local.md
