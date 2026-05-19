@@ -2,7 +2,10 @@
 LangChain agent setup for multi-step reasoning over documents.
 """
 
+from typing import Any, Dict, List
+
 from langchain.agents import create_agent
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain.tools import tool
 from langchain_openai import ChatOpenAI
 from src.config import settings
@@ -88,6 +91,40 @@ def create_qa_agent(memory_enabled: bool = True):
     return agent
 
 
+def _extract_pmids(results: List[Dict[str, Any]]) -> List[str]:
+    """Extract unique PMIDs from retrieval results."""
+    seen = set()
+    pmids = []
+    for result in results:
+        pmid = str(result.get("metadata", {}).get("pmid", "")).strip()
+        if pmid and pmid != "N/A" and pmid not in seen:
+            seen.add(pmid)
+            pmids.append(pmid)
+    return pmids
+
+
+def _format_retrieval_context(results: List[Dict[str, Any]]) -> str:
+    """Create a compact context block for grounded answer generation."""
+    chunks = []
+    for i, result in enumerate(results, 1):
+        metadata = result.get("metadata", {})
+        pmid = metadata.get("pmid", "N/A")
+        title = metadata.get("title", "N/A")
+        excerpt = result.get("content", "")[:350]
+        chunks.append(f"[{i}] PMID:{pmid} | {title}\n{excerpt}")
+    return "\n\n".join(chunks)
+
+
+def _ensure_citations(answer: str, pmids: List[str]) -> str:
+    """Guarantee at least one PMID citation in grounded answers."""
+    if not pmids:
+        return answer
+    if any(f"[PMID:{pmid}]" in answer for pmid in pmids):
+        return answer
+    fallback = ", ".join(f"[PMID:{pmid}]" for pmid in pmids[:3])
+    return f"{answer.rstrip()}\n\nSources: {fallback}"
+
+
 def query_agent(agent, question: str) -> str:
     """
     Query the agent with a question.
@@ -100,6 +137,39 @@ def query_agent(agent, question: str) -> str:
         Agent's response
     """
     try:
+        # Use a deterministic, grounded path when retrieval has evidence.
+        retrieval_results = get_retriever().retrieve(question)
+        if retrieval_results:
+            pmids = _extract_pmids(retrieval_results)
+            context = _format_retrieval_context(retrieval_results)
+
+            llm = ChatOpenAI(
+                openai_api_key=settings.openai_api_key,
+                model=settings.model_name,
+                temperature=settings.temperature,
+                max_tokens=settings.max_tokens,
+            )
+
+            grounded_prompt = (
+                f"Question: {question}\n\n"
+                f"Evidence from PubMed documents:\n{context}\n\n"
+                "Instructions:\n"
+                "- Answer based on the evidence above.\n"
+                "- Cite supporting claims inline using [PMID:xxxxx].\n"
+                "- Use only PMIDs that appear in the provided evidence.\n"
+                "- If evidence is insufficient, state uncertainty clearly."
+            )
+
+            response = llm.invoke(
+                [
+                    SystemMessage(content="You are a biomedical QA assistant that writes concise, evidence-grounded answers."),
+                    HumanMessage(content=grounded_prompt),
+                ]
+            )
+            content = getattr(response, "content", str(response))
+            return _ensure_citations(content, pmids)
+
+        # Fallback path when no retrieval evidence is available.
         result = agent.invoke({"messages": [{"role": "user", "content": question}]})
         messages = result.get("messages", [])
         if messages:

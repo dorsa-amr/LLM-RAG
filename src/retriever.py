@@ -124,6 +124,17 @@ class RetrieverPipeline:
             for doc, score in results
             if score <= score_threshold
         ]
+
+        # If strict threshold removes all results, fall back to top matches.
+        if not filtered_results and results:
+            filtered_results = [
+                {
+                    "content": doc.page_content,
+                    "metadata": doc.metadata,
+                    "score": score
+                }
+                for doc, score in results[:top_k]
+            ]
         
         return filtered_results
 
