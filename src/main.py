@@ -35,7 +35,7 @@ def main():
             query = "machine learning"
         
         # Fetch and process data
-        documents = pipeline(query, max_articles=50)
+        documents = pipeline(query)
         
         if documents:
             # Add to vector store
