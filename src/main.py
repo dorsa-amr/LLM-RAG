@@ -30,9 +30,9 @@ def main():
     setup_data = input("Would you like to load sample PubMed articles? (y/n): ").lower() == 'y'
     
     if setup_data:
-        query = input("Enter search query for PubMed (default: 'machine learning'): ").strip()
+        query = input("What topic should I search in medical research? (Press Enter for 'fatty liver'): ").strip()
         if not query:
-            query = "machine learning"
+            query = "fatty liver"
         
         # Fetch and process data (faster default run size)
         documents = pipeline(query, max_articles=50)

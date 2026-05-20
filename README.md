@@ -18,6 +18,13 @@ Run the main script:
 python src/main.py
 ```
 
+### How to interact with the app
+- When asked, choose `y` if you want to load sample PubMed articles.
+- Enter a health topic (for example, `fatty liver`) when prompted.
+- If you press Enter without typing a topic, the app uses `fatty liver` by default.
+- After loading, ask your questions in plain language.
+- Type `quit` anytime to exit.
+
 ## Contributing
 Feel free to open issues or submit pull requests.
 
