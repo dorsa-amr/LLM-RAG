@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     # PubMed
     pubmed_batch_size: int = int(os.getenv("PUBMED_BATCH_SIZE", 100))
     pubmed_max_articles: int = int(os.getenv("PUBMED_MAX_ARTICLES", 500))
+    pubmed_use_full_text: bool = os.getenv("PUBMED_USE_FULL_TEXT", "true").lower() == "true"
+    pubmed_full_text_char_limit: int = int(os.getenv("PUBMED_FULL_TEXT_CHAR_LIMIT", 20000))
     
     # Retrieval
     retrieval_top_k: int = int(os.getenv("RETRIEVAL_TOP_K", 5))
