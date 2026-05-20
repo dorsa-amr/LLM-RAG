@@ -34,8 +34,8 @@ def main():
         if not query:
             query = "machine learning"
         
-        # Fetch and process data
-        documents = pipeline(query)
+        # Fetch and process data (faster default run size)
+        documents = pipeline(query, max_articles=50)
         
         if documents:
             # Add to vector store
