@@ -2,6 +2,7 @@
 LangChain agent setup for multi-step reasoning over documents.
 """
 
+import re
 from typing import Any, Dict, List
 
 from langchain.agents import create_agent
@@ -106,17 +107,36 @@ def _extract_pmids(results: List[Dict[str, Any]]) -> List[str]:
 def _format_retrieval_context(results: List[Dict[str, Any]]) -> str:
     """Create a compact context block for grounded answer generation."""
     chunks = []
-    for i, result in enumerate(results, 1):
+    for result in results:
         metadata = result.get("metadata", {})
         pmid = metadata.get("pmid", "N/A")
         title = metadata.get("title", "N/A")
         excerpt = result.get("content", "")[:350]
-        chunks.append(f"[{i}] PMID:{pmid} | {title}\n{excerpt}")
+        chunks.append(f"PMID:{pmid} | {title}\n{excerpt}")
     return "\n\n".join(chunks)
+
+
+def _normalize_inline_citations(answer: str, pmids: List[str]) -> str:
+    """Convert numeric citations like [1] into [PMID:xxxxx] and drop unmatched numeric refs."""
+    if not pmids:
+        return answer
+
+    def repl(match: re.Match[str]) -> str:
+        idx = int(match.group(1))
+        if 1 <= idx <= len(pmids):
+            return f"[PMID:{pmids[idx - 1]}]"
+        return ""
+
+    normalized = re.sub(r"\[(\d+)\]", repl, answer)
+    # Collapse accidental double spaces left after removing unmatched numeric citations.
+    normalized = re.sub(r" {2,}", " ", normalized)
+    return normalized
 
 
 def _ensure_citations(answer: str, pmids: List[str]) -> str:
     """Guarantee at least one PMID citation in grounded answers."""
+    answer = _normalize_inline_citations(answer, pmids)
+
     if not pmids:
         return answer
     if any(f"[PMID:{pmid}]" in answer for pmid in pmids):
@@ -157,6 +177,7 @@ def query_agent(agent, question: str) -> str:
                 "- Answer based on the evidence above.\n"
                 "- Cite supporting claims inline using [PMID:xxxxx].\n"
                 "- Use only PMIDs that appear in the provided evidence.\n"
+                "- Do not use numeric citation markers like [1], [2], or [3].\n"
                 "- If evidence is insufficient, state uncertainty clearly."
             )
 
