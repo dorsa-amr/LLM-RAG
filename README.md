@@ -40,6 +40,3 @@ The script writes metrics and per-question outputs to `benchmark_results.json`.
 
 ## Contributing
 Feel free to open issues or submit pull requests.
-
-## License
-MIT License
