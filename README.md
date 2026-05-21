@@ -1,6 +1,6 @@
 # LLM-RAG
 
-This project implements an agentic Retrieval-Augmented Generation (RAG) Q&A system for PubMed articles. It uses LangChain, ChromaDB, and OpenAI APIs to provide accurate and reliable answers to user queries.
+This project implements an agentic Retrieval-Augmented Generation (RAG) question answering system for PubMed articles. It uses LangChain, ChromaDB, and OpenAI APIs to provide accurate and reliable answers to user queries.
 
 ## Features
 - Full-text ingestion with fallback to abstracts.
