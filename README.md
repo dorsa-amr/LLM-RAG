@@ -1,10 +1,14 @@
 # LLM-RAG
 
-This project implements a Retrieval-Augmented Generation (RAG) system over PubMed articles. It uses LangChain, ChromaDB, and OpenAI APIs to provide accurate and reliable answers to user queries.
+This project implements an agentic Retrieval-Augmented Generation (RAG) Q&A system for PubMed articles. It uses LangChain, ChromaDB, and OpenAI APIs to provide accurate and reliable answers to user queries.
 
 ## Features
 - Full-text ingestion with fallback to abstracts.
 - Deterministic citation enforcement.
+- Multi-step retrieval and query refinement for harder questions.
+- Retrieval reranking to prioritize the most relevant evidence chunks.
+- Evidence sufficiency gate before final answer generation.
+- Controlled extra retrieval pass when evidence is judged insufficient.
 - Robust error handling and retry logic.
 
 ## Setup
