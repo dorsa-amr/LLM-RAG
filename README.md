@@ -25,6 +25,19 @@ python src/main.py
 - After loading, ask your questions in plain language.
 - Type `quit` anytime to exit.
 
+## Benchmark
+Run the benchmark script to measure:
+- average end-to-end latency
+- p95 latency
+- citation coverage rate (answers containing PMID citations)
+
+Use the default 20-question set:
+```bash
+python src/benchmark.py --questions-file benchmark_questions.txt --ingest-query "fatty liver" --max-articles 50 --output benchmark_results.json
+```
+
+The script writes metrics and per-question outputs to `benchmark_results.json`.
+
 ## Contributing
 Feel free to open issues or submit pull requests.
 

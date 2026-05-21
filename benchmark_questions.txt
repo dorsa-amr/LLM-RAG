@@ -1,0 +1,21 @@
+# 20 benchmark questions for medical RAG evaluation
+Does intermittent fasting help with weight loss in adults?
+How does time-restricted eating affect insulin resistance?
+What evidence links fasting diets to improvements in fatty liver disease?
+How does alternate-day fasting compare with daily calorie restriction?
+What are common adverse effects reported with fasting diets?
+Does fasting influence ALT and AST levels in metabolic liver disease?
+How does fasting affect visceral fat versus subcutaneous fat?
+Are fasting interventions effective in patients with type 2 diabetes?
+What do randomized trials report about fasting and blood pressure?
+How sustainable is intermittent fasting compared to standard dieting?
+What are outcomes of fasting-mimicking diets in oncology populations?
+How does fasting impact LDL, HDL, and triglycerides?
+What evidence exists for fasting and inflammatory markers like CRP?
+Do men and women respond differently to intermittent fasting?
+How does fasting affect lean mass preservation during weight loss?
+Is there evidence that fasting improves gut microbiome diversity?
+How do fasting protocols affect sleep quality and circadian rhythm?
+What is known about fasting and long-term cardiovascular risk?
+Which patient groups should avoid fasting diets based on current evidence?
+What are the key evidence gaps in fasting-diet research today?
